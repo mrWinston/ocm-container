@@ -3,6 +3,10 @@
 cd $(dirname $0)
 CONFIG_DIR=${HOME}/.config/ocm-container
 
+if [[ -z "${BIN_DIR}" ]]; then 
+  BIN_DIR=/usr/local/bin
+fi
+
 if [[ -z ${aliases_file} ]]; then
 	echo "run command with aliases file"
 	echo 'aliases_file=$(alias) '"$0 $@"
@@ -50,9 +54,13 @@ else
   init_new_config
 fi
 
-if ! [[ -L /usr/local/bin/ocm-container ]]; then 
+if ! [[ -L "${BIN_DIR}/ocm-container" ]]; then 
   echo "Creating symlink for ocm-container binary (requires sudo permissions...)"
-  sudo ln -sfn "$(pwd)/ocm-container.sh" /usr/local/bin/ocm-container
+  sudo_cmd="sudo"
+  if [[ -w "${BIN_DIR}" ]]; then
+    sudo_cmd=""
+  fi
+  $sudo_cmd ln -sfn "$(pwd)/ocm-container.sh" "${BIN_DIR}/ocm-container"
 fi
 
 # ! $( alias ocm-container-stg ) || 
